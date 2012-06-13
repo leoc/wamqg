@@ -1,0 +1,5 @@
+dir_mode: script
+dir: ..
+multiple: false
+backtrace: true
+monitor: true

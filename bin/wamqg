@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+$: << File.dirname(__FILE__)+'/../lib/'
+
+require 'wamqg'
+
+AMQP_CONFIG = { host: '127.0.0.1' }
+
+EM.run do
+  CHANNEL = AMQP::Channel.new(AMQP.connect(AMQP_CONFIG))
+
+  WAMQG.start
+  shutdown = false
+
+  trap('TERM') do
+    if !shutdown
+      puts "\rInitiating graceful shutdown."
+      WAMQG.stop
+      shutdown = true
+    else
+      puts "\rPlease be patient."
+    end
+  end
+end
