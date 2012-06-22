@@ -8,6 +8,7 @@ AMQP_CONFIG = { host: '127.0.0.1' }
 
 EM.run do
   CHANNEL = AMQP::Channel.new(AMQP.connect(AMQP_CONFIG))
+  EXCHANGE = CHANNEL.topic('pub/sub', auto_delete: true)
 
   WAMQG.start
   shutdown = false
