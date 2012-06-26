@@ -7,12 +7,6 @@ require 'wamqg'
 AMQP_CONFIG = { host: '127.0.0.1' }
 
 EM.run do
-  CHANNEL = AMQP::Channel.new(AMQP.connect(AMQP_CONFIG))
-  EXCHANGE = CHANNEL.topic('pub/sub', auto_delete: true)
-
-  WAMQG.start
-  shutdown = false
-
   trap('TERM') do
     if !shutdown
       puts "\rInitiating graceful shutdown."
@@ -20,6 +14,13 @@ EM.run do
       shutdown = true
     else
       puts "\rPlease be patient."
+    end
+  end
+
+  CHANNEL = AMQP::Channel.new(AMQP.connect(AMQP_CONFIG)) do |channel|
+    EXCHANGE = channel.topic('pub/sub', auto_delete: true) do |exchange|
+      WAMQG.start
+      shutdown = false
     end
   end
 end

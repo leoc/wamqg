@@ -18,6 +18,16 @@ class WamqgClient
 window.wamqg = new WamqgClient()
 
 class Backbone.WamqgModel extends Backbone.Model
-  wamqg_bind: (key, callback) =>
-    window.wamqg.bind key, (data) =>
+  initialize: ->
+    window.wamqg.bind @wamqg_binding, (data) =>
       @set @parse(data)
+
+class Backbone.WamqgCollection extends Backbone.Collection
+  initialize: ->
+    window.wamqg.bind @wamqg_binding, (data) =>
+      model = @get(data['id'])
+      if model
+        model.set(model.parse(data))
+        model.change()
+      else
+        @add data
