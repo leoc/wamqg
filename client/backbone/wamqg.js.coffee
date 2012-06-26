@@ -30,4 +30,5 @@ class Backbone.WamqgCollection extends Backbone.Collection
         model.set(model.parse(data))
         model.change()
       else
-        @add data
+        @add data, parse: true, silent: true
+      @sort()
