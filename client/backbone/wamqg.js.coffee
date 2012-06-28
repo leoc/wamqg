@@ -6,9 +6,10 @@ class WamqgClient
     @socket = new WebSocket(@url)
     @socket.onmessage = (message) =>
       json = JSON.parse message.data
+      headers = json.headers
       payload = JSON.parse json.payload
       unless @callbacks[json.routing_key] is undefined
-        callback(payload) for callback in @callbacks[json.routing_key]
+        callback(headers, payload) for callback in @callbacks[json.routing_key]
 
   bind: (key, callback) =>
     @socket.send "bind #{key}"
@@ -19,16 +20,21 @@ window.wamqg = new WamqgClient()
 
 class Backbone.WamqgModel extends Backbone.Model
   initialize: ->
-    window.wamqg.bind @wamqg_binding, (data) =>
-      @set @parse(data)
+    window.wamqg.bind @wamqg_binding, (headers, payload) =>
+      @set @parse(payload)
 
 class Backbone.WamqgCollection extends Backbone.Collection
   initialize: ->
-    window.wamqg.bind @wamqg_binding, (data) =>
-      model = @get(data['id'])
+    window.wamqg.bind @wamqg_binding, (headers, payload) =>
+      model = @get(payload['id'])
       if model
-        model.set(model.parse(data))
-        model.change()
+        model.set model.parse(payload), silent: true
+        if (typeof(@wamqg_visible_if) == 'undefined') or @wamqg_visible_if(model, headers)
+          model.change()
+          @sort()
+        else
+          @remove model, silent: true
+          @trigger 'reset'
       else
-        @add data, parse: true, silent: true
-      @sort()
+        @add payload, parse: true, silent: true
+        @sort()
