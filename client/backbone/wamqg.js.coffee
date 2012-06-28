@@ -24,9 +24,12 @@ class Backbone.WamqgModel extends Backbone.Model
       @set @parse(payload)
 
 class Backbone.WamqgCollection extends Backbone.Collection
+  wamqg_primary_key: 'id'
+
   initialize: ->
     window.wamqg.bind @wamqg_binding, (headers, payload) =>
-      model = @get(payload['id'])
+      model = @find (item) =>
+        item.get(@wamqg_primary_key) is payload[@wamqg_primary_key]
       if model
         model.set model.parse(payload), silent: true
         if (typeof(@wamqg_visible_if) == 'undefined') or @wamqg_visible_if(model, headers)
