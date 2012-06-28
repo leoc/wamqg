@@ -12,9 +12,7 @@ class WAMQG
 
         ws.onclose do
           puts "closing queues."
-          @queues.delete(ws).each do |queue|
-            queue.delete
-          end
+          @queues.delete(ws).each(&:delete)
         end
 
         ws.onmessage { |message|
@@ -23,9 +21,10 @@ class WAMQG
             routing_key = $1
             @queues[ws] << CHANNEL.queue do |queue|
               queue.subscribe do |headers,payload|
-                puts "message! #{payload}"
+                puts "message! #{headers.headers} #{payload}"
                 _message = {
                   routing_key: routing_key,
+                  headers: headers.headers,
                   payload: payload
                 }
                 ws.send _message.to_json
