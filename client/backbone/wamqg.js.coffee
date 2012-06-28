@@ -4,6 +4,9 @@ class WamqgClient
 
   constructor: ->
     @socket = new WebSocket(@url)
+    @socket.onopen = =>
+      for key, value of @callbacks
+        @socket.send "bind #{key}"
     @socket.onmessage = (message) =>
       json = JSON.parse message.data
       headers = json.headers
@@ -12,7 +15,8 @@ class WamqgClient
         callback(headers, payload) for callback in @callbacks[json.routing_key]
 
   bind: (key, callback) =>
-    @socket.send "bind #{key}"
+    if @socket.readyState is WebSocket.OPEN
+      @socket.send "bind #{key}"
     @callbacks[key] ||= []
     @callbacks[key].push callback
 
