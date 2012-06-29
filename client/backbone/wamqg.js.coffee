@@ -1,9 +1,9 @@
-class WamqgClient
-  url: 'ws://127.0.0.1:8080'
+class window.Wamqg extends Backbone.Model
   callbacks: {}
 
-  constructor: ->
-    @socket = new WebSocket(@url)
+  constructor: (url) ->
+    @url = url
+    @socket = new WebSocket(url)
     @socket.onopen = =>
       for key, value of @callbacks
         @socket.send "bind #{key}"
@@ -20,18 +20,24 @@ class WamqgClient
     @callbacks[key] ||= []
     @callbacks[key].push callback
 
-window.wamqg = new WamqgClient()
-
 class Backbone.WamqgModel extends Backbone.Model
-  initialize: ->
-    window.wamqg.bind @wamqg_binding, (headers, payload) =>
+  initialize: (wamqg = undefined) ->
+    if wamqg is undefined
+      @wamqg = window.wamqg
+    else
+      @wamqg = wamqg
+    @wamqg.bind @wamqg_binding, (headers, payload) =>
       @set @parse(payload)
 
 class Backbone.WamqgCollection extends Backbone.Collection
   wamqg_primary_key: 'id'
 
-  initialize: ->
-    window.wamqg.bind @wamqg_binding, (headers, payload) =>
+  initialize: (wamqg = undefined) ->
+    if wamqg is undefined
+      @wamqg = window.wamqg
+    else
+      @wamqg = wamqg
+    @wamqg.bind @wamqg_binding, (headers, payload) =>
       model = @find (item) =>
         item.get(@wamqg_primary_key) is payload[@wamqg_primary_key]
       if model
