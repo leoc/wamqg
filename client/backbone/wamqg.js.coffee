@@ -1,10 +1,14 @@
 class window.Wamqg extends Backbone.Model
   callbacks: {}
 
-  constructor: (url) ->
-    @url = url
-    @socket = new WebSocket(url)
+  defaults:
+    status: WebSocket.CLOSED
+    url: "ws://localhost:8080"
+
+  connect: =>
+    @socket = new WebSocket(@get "url")
     @socket.onopen = =>
+      @set status: @socket.readyState
       for key, value of @callbacks
         @socket.send "bind #{key}"
     @socket.onmessage = (message) =>
@@ -13,9 +17,11 @@ class window.Wamqg extends Backbone.Model
       payload = JSON.parse json.payload
       unless @callbacks[json.routing_key] is undefined
         callback(headers, payload) for callback in @callbacks[json.routing_key]
+    @socket.onclose = =>
+      @set status: @socket.readyState
 
-  bind: (key, callback) =>
-    if @socket.readyState is WebSocket.OPEN
+  bind_to_amqp: (key, callback) =>
+    if @socket and @socket.readyState is WebSocket.OPEN
       @socket.send "bind #{key}"
     @callbacks[key] ||= []
     @callbacks[key].push callback
@@ -26,7 +32,7 @@ class Backbone.WamqgModel extends Backbone.Model
       @wamqg = window.wamqg
     else
       @wamqg = wamqg
-    @wamqg.bind @wamqg_binding, (headers, payload) =>
+    @wamqg.bind_to_amqp @wamqg_binding, (headers, payload) =>
       @set @parse(payload)
 
 class Backbone.WamqgCollection extends Backbone.Collection
@@ -37,7 +43,7 @@ class Backbone.WamqgCollection extends Backbone.Collection
       @wamqg = window.wamqg
     else
       @wamqg = wamqg
-    @wamqg.bind @wamqg_binding, (headers, payload) =>
+    @wamqg.bind_to_amqp @wamqg_binding, (headers, payload) =>
       model = @find (item) =>
         item.get(@wamqg_primary_key) is payload[@wamqg_primary_key]
       if model
