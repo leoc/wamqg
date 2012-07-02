@@ -31,6 +31,9 @@ class WAMQG
               end
               queue.bind(EXCHANGE, routing_key: routing_key)
             end
+          elsif message =~ /^publish ([^ ]*) (.*)/
+            puts "publish! #{$1} #{$2}"
+            EXCHANGE.publish $2, routing_key: $1
           end
         }
       end
