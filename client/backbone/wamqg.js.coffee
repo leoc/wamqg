@@ -36,7 +36,6 @@ class window.Wamqg extends Backbone.Model
     if @socket and @socket.readyState is WebSocket.OPEN
       while @outbox.length > 0
         message = @outbox.shift()
-        console.log "publishing #{message}"
         @socket.send message
 
 class Backbone.WamqgModel extends Backbone.Model
