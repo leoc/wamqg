@@ -65,7 +65,7 @@ class Backbone.WamqgCollection extends Backbone.Collection
       if model
         rank_before = @comparator(model)
         model.set model.parse(payload), silent: true
-        if (typeof(@wamqg_visible_if) == 'undefined') or @wamqg_visible_if(model, headers)
+        if (typeof(@wamqg_visible_if) == 'undefined') or @wamqg_visible_if(model, headers, payload)
           model.change()
           if @comparator(model) != rank_before
             @sort()
