@@ -18,7 +18,7 @@ EM.run do
   end
 
   CHANNEL = AMQP::Channel.new(AMQP.connect(AMQP_CONFIG)) do |channel|
-    EXCHANGE = channel.topic('pub/sub', auto_delete: true) do |exchange|
+    EXCHANGE = channel.topic('pub/sub') do |exchange|
       WAMQG.start
       shutdown = false
     end
