@@ -27,7 +27,7 @@ module Wamqg
                   _message = {
                     routing_key: routing_key,
                     headers: headers.headers,
-                    payload: payload
+                    payload: payload.force_encoding('UTF-8')
                   }
                   ws.send _message.to_json
                 end
