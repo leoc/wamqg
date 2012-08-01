@@ -1,6 +1,7 @@
+require File.expand_path('../lib/wamqg/version', __FILE__)
+
 Gem::Specification.new do |gem|
   gem.name        = %q{wamqg}
-  gem.version     = '0.1'
   gem.authors     = ["Arthur Andersen", "Franz Kißig"]
   gem.homepage    = "http://github.com/leoc/wamqg"
   gem.summary     = %q{AMQP-Websocket-Gateway}
