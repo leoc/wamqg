@@ -2,9 +2,25 @@
 
 $: << File.dirname(__FILE__)+'/../lib/'
 
-require 'wamqg/wamqg'
+TOOL = File.basename(__FILE__)
 
-AMQP_CONFIG = { host: '127.0.0.1' }
+require TOOL
+
+def development?
+  ENV['WAMQG_ENV']=='development'
+end
+
+if development?
+  puts "#{TOOL}: booting in development mode"
+  CONFIG_FILE = File.dirname(__FILE__)+"/../config/#{TOOL}.yml"
+else
+  puts "#{TOOL}: booting in production mode"
+  CONFIG_FILE = "/etc/#{TOOL}.yml"
+end
+
+CONFIG = YAML.load(File.read(CONFIG_FILE)).with_indifferent_access
+
+AMQP_CONFIG = CONFIG[:amqp].symbolize_keys
 
 EM.run do
   trap('TERM') do

@@ -1,0 +1,4 @@
+amqp:
+  host: localhost
+  username: guest
+  password: guest
