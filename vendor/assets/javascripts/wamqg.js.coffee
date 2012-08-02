@@ -4,10 +4,12 @@ class window.Wamqg extends Backbone.Model
 
   defaults:
     status: WebSocket.CLOSED
-    url: "ws://localhost:8080"
+
+  url: ->
+    "ws://#{window.location.hostname}:8080"
 
   connect: =>
-    @socket = new WebSocket(@get "url")
+    @socket = new WebSocket(@url())
     @socket.onopen = =>
       @set status: @socket.readyState
       for key, value of @callbacks
