@@ -7,13 +7,17 @@ Bundler.require(:default)
 
 require 'erb'
 
+def development?
+  ENV['WAMQG_ENV']=='development'
+end
+
 # for Hash#with_indifferent_access
 require 'active_support/core_ext/hash'
 
 options = YAML.load(
   ERB.new(
   IO.read(
-  File.dirname(__FILE__) + "/../daemons.yml"
+  File.dirname(__FILE__) + "/../daemons#{"_development" if development?}.yml"
   )).result).with_indifferent_access
 options[:dir_mode] = options[:dir_mode].to_sym
 

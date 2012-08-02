@@ -1,5 +1,4 @@
-dir_mode: script
-dir: ..
+dir_mode: system
 multiple: false
 backtrace: true
 monitor: true

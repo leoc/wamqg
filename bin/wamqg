@@ -6,10 +6,6 @@ TOOL = File.basename(__FILE__)
 
 require TOOL
 
-def development?
-  ENV['WAMQG_ENV']=='development'
-end
-
 if development?
   puts "#{TOOL}: booting in development mode"
   CONFIG_FILE = File.dirname(__FILE__)+"/../config/#{TOOL}.yml"
