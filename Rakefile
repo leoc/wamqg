@@ -30,6 +30,7 @@ FILE
 update-rc.d -f wamqg defaults
 chown -R root:root /usr/share/wamqg
 
+bash -c "source /usr/local/rvm/scripts/rvm; cd /usr/share/wamqg; bundle install --deployment;"
 /etc/init.d/wamqg start
 FILE
       end
@@ -61,7 +62,6 @@ FILE
 
 case "$1" in
   start)
-    bash -c "source /usr/local/rvm/scripts/rvm; cd /usr/share/wamqg; bundle install --deployment;"
     bash -c "source /usr/local/rvm/scripts/rvm; cd /usr/share/wamqg; bin/wamqg_ctl start"
   ;;
   stop)
