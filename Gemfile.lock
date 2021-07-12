@@ -17,7 +17,8 @@ GEM
     activesupport (3.2.7)
       i18n (~> 0.6)
       multi_json (~> 1.0)
-    addressable (2.3.2)
+    addressable (2.8.0)
+      public_suffix (>= 2.0.2, < 5.0)
     amq-client (0.9.4)
       amq-protocol (>= 0.9.4)
       eventmachine
@@ -38,6 +39,7 @@ GEM
     journey (1.0.4)
     json (1.7.4)
     multi_json (1.3.6)
+    public_suffix (4.0.6)
     rack (1.4.1)
     rack-cache (1.2)
       rack (>= 0.4)
